@@ -2,6 +2,7 @@ class BankAccount:
     def __init__(self, holder, initial_balance=0):
         self.holder = holder
         self.balance = initial_balance
+    
     def deposit(self, amount):
         if amount > 0:
             self.balance += amount
