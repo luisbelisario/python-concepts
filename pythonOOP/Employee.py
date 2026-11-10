@@ -1,7 +1,6 @@
 class Employee:
-    def __init__(self, name, position, base_salary):
+    def __init__(self, name: str, base_salary: float):
         self._name = name
-        self._position = position
         self._base_salary = base_salary
 
     @property
@@ -23,12 +22,15 @@ class Employee:
             raise ValueError("Raise percentage cannot be negative.")
         self.base_salary = self._base_salary * (1 + percentage / 100)
         print(f"Salary raised by {percentage}%. New base salary: {self._base_salary}, New annual salary: {self.annual_salary}")
+
+    def info(self):
+        return f"Employee: {self._name}, Base Salary: {self._base_salary}"
         
 
 
 def main():
     emp1 = Employee("John Doe", "Software Engineer", 5000)
-    print(f"Employee: {emp1._name}, Position: {emp1._position}, Base Salary: {emp1.base_salary}, Annual Salary: {emp1.annual_salary}")
+    print(emp1.info())
 
     
     emp1.base_salary = 5500
