@@ -227,18 +227,50 @@ p = Point(1.0, 2.0)
 ```python
 @dataclass
 class Config:
-    host: str = "localhost"
+    host: str = "localhost"          # default: imutavel
     port: int = 8080
-    password: str = field(repr=False)  # never printed in repr
-    metadata: dict = field(default_factory=dict)  # mutable default
+    password: str = field(repr=False) # escondido do print/repr
+    metadata: dict = field(default_factory=dict)  # mutavel → factory
+    id: int = field(compare=False)    # ignorado no ==
+    total: float = field(init=False)  # nao recebido no __init__, calculado depois
+```
+
+**Regra de ouro:** `default` para imutáveis (int, str, bool), `default_factory` para mutáveis (list, dict, set).
+
+```python
+# metadata vira um dict vazio pra CADA instancia
+c1 = Config()
+c2 = Config()
+c1.metadata["env"] = "production"
+print(c2.metadata)  # {} — isolado, sem factory isso vazaria
 ```
 
 ## 7. Inheritance, super(), MRO
+
 - Single inheritance = works like Java
 - Multiple inheritance = allowed. MRO (C3 linearization) resolves method order
 - `super()` is **cooperative** — calls the **next in MRO chain**, not the direct parent
 - If one class in the chain forgets `super()`, the rest silently never run
 - Check order: `ClassName.__mro__`
+
+### Diamond problem — solved by MRO
+```python
+class A:
+    def ping(self): return "A"
+
+class B(A):
+    def ping(self): return "B" + super().ping()
+
+class C(A):
+    def ping(self): return "C" + super().ping()
+
+class D(B, C):
+    def ping(self): return "D" + super().ping()
+
+print(D.__mro__)  # D → B → C → A → object
+print(D().ping()) # "DBCA" — A executado uma vez
+```
+`super()` in B goes to C (next in MRO), **not** to A.
 
 ## 8. Special Methods (__str__, __repr__, __eq__, __hash__, __bool__)
 - `__repr__` → dev-facing. Should recreate the object (`Class('args')`)
